@@ -2,8 +2,10 @@
 #include "CampbellLib.h"
 
 int main() {
+  // cout rounds to a number that's too small by default.
   std::cout.precision(12);
 
+  // Test string to double conversion.
   std::string num = "-1234.56789";
   Campbell::Test::ASSERT(Campbell::Strings::toNumber(num.c_str()), -1234.56789);
   num = "123";
@@ -22,6 +24,7 @@ int main() {
 
   std::cout << std::endl;
 
+  // Test yesno input.
   std::string yes = "Yes";
   std::string no = "No";
   std::string unk = "Uknown";

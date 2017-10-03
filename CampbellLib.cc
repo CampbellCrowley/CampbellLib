@@ -10,6 +10,8 @@ bool Common::isdigit(const char input) {
 bool Strings::isNumber(const char input[]) {
   bool firstDecimal = true;
   for (int i = 0; i < Arrays::length(input); i++) {
+    // Number can contain only one decimal, and if it has a sign, the sign must
+    // be at the beginning and there must be only one sign.
     if (!Common::isdigit(input[i]) && input[i] != '.' &&
         !((input[i] == '-' || input[i] == '+') && i == 0)) {
       return false;
@@ -27,6 +29,7 @@ bool Strings::isNumber(const char input[]) {
 
 double Strings::toNumber(const char input[]) {
   if (!isNumber(input)) return 0;
+  // Number is calculated as int first to help reduce precision issues.
   unsigned int intermediate = 0;
   bool isSigned = input[0] == '+' || input[0] == '-';
   bool isNegative = input[0] == '-';
@@ -43,9 +46,11 @@ double Strings::toNumber(const char input[]) {
     if (i == decimalLocation || (isSigned && i == 0)) {
       continue;
     }
+    // Digit to modify is calculated but must account for the offset created
+    // when the string has a decimal but an int does not store a decimal.
+    int power = Arrays::length(input) - i + ((i >= decimalLocation) ? 0 : -1);
     // Casting to int gives ASCII codes from 48 to 57 for 0-9. Shifting this
     // gives the correct numbers.
-    int power = Arrays::length(input) - i + ((i >= decimalLocation) ? 0 : -1);
     intermediate += ((int)input[i] - 48) * pow(10, power);
   }
 
@@ -54,7 +59,6 @@ double Strings::toNumber(const char input[]) {
   return isNegative ? -output : output;
 }
 
-// TODO: test this
 bool Strings::toYesNo(const char input[], bool defaultYes) {
   if (defaultYes) {
     if (input[0] == 'n' || input[0] == 'N') {
