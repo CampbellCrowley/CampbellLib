@@ -75,4 +75,10 @@ bool Strings::toYesNo(const char input[], bool defaultYes) {
   }
 }
 
+bool Strings::getYesNo(bool defaultYes) {
+  std::string input;
+  getline(std::cin, input);
+  return Strings::toYesNo(input.c_str(), defaultYes);
+}
+
 }  // namespace Campbell

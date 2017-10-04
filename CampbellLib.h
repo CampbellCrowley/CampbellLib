@@ -2,7 +2,6 @@
 #define CAMPBELL_LIB_H
 
 #include <algorithm>
-#include <cstddef>
 #include <iostream>
 
 namespace Campbell {
@@ -70,6 +69,7 @@ class Strings {
   // with an 'n'. If false, it will assume "No" unless the input begins with
   // 'y'.
   static bool toYesNo(const char input[], bool defaultYes = true);
+  static bool getYesNo(bool defaultYes = true);
 
 };  // class Strings
 
