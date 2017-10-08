@@ -98,6 +98,7 @@ class Test {
       PASS();
     } else {
       FAIL(actual, expected);
+      exit(1);
     }
   }
   // Checks that two numbers are similar, to account for floating point
