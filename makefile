@@ -1,7 +1,10 @@
 OBJS = test.out
 
-test: libtest.cc
-	g++ libtest.cc -o test.out && ./test.out
+p1: libtest.cc CampbellLib.cc CampbellLib.h
+	g++ libtest.cc -o test.out
+
+test:
+	./test.out
 
 clean:
 	\rm *.out
