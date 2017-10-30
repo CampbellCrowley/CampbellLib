@@ -8,6 +8,7 @@ bool Common::isdigit(const char input) {
 }
 
 bool Strings::isNumber(const char input[]) {
+  if (Arrays::length(input) == 0) return false;
   bool firstDecimal = true;
   for (int i = 0; i < Arrays::length(input); i++) {
     // Number can contain only one decimal, and if it has a sign, the sign must
