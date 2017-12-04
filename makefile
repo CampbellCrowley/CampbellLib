@@ -1,13 +1,13 @@
 OBJS = test.out
 
-p1: libtest.cc CampbellLib.cc CampbellLib.h
-	g++ libtest.cc -o test.out
+$(OBJS): libtest.cc CampbellLib.cc CampbellLib.h
+	g++ libtest.cc -o $(OBJS)
 
-test:
-	./test.out
+test: $(OBJS)
+	./$(OBJS)
 
-clean:
-	\rm *.out
+clean: $(OBJS)
+	\rm $(OBJS)
 
-tar:
+tar: CampbellLib.cpp CampbellLib.h libtest.cc
 	tar cfv CampbellLib.tar CampbellLib.cpp CampbellLib.h libtest.cc
