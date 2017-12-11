@@ -1,7 +1,7 @@
 #include "Menu.h"
 #include <curses.h>
-namespace Menu {
-void MenuController::startMenu() {
+namespace Campbell {
+void Menu::startMenu() {
   openMenu();
   Input nextInput = NONE;
   while (nextInput != QUIT && isWinOpen_) {
@@ -9,11 +9,11 @@ void MenuController::startMenu() {
     if (move(nextInput)) printMenu();
   }
 }
-void MenuController::openMenu() {
+void Menu::openMenu() {
   startWin();
   printMenu();
 }
-void MenuController::printMenu() const {
+void Menu::printMenu() const {
   if (!isWinOpen_) return;
   ::move(0, 0);
   erase();
@@ -85,8 +85,8 @@ void MenuController::printMenu() const {
   ::move(cursorPos, 0);
   refresh();
 }
-void MenuController::closeMenu() { endWin(); }
-void MenuController::startWin() {
+void Menu::closeMenu() { endWin(); }
+void Menu::startWin() {
   // Handle NCurses.
   initscr();
   cbreak();
@@ -107,11 +107,11 @@ void MenuController::startWin() {
 
   isWinOpen_ = true;
 }
-void MenuController::endWin() {
+void Menu::endWin() {
   endwin();
   isWinOpen_ = false;
 }
-Input MenuController::getInput() const {
+Menu::Input Menu::getInput() const {
   wchar_t input = getch();
   switch (input) {
     case KEY_DOWN:
@@ -144,7 +144,7 @@ Input MenuController::getInput() const {
       return NONE;
   }
 }
-bool MenuController::move(Input direction) {
+bool Menu::move(Input direction) {
   switch(direction) {
     case UP:
     case DOWN: {
@@ -168,7 +168,7 @@ bool MenuController::move(Input direction) {
         return false;
       } else {
         closeMenu();
-        switch ((callbacks_.*optionList[currentIndex].selectAction)()) {
+        switch (optionList[currentIndex].callback_.callback()) {
           case 0:
             openMenu();
             setColor(ERROR);
@@ -187,7 +187,7 @@ bool MenuController::move(Input direction) {
     case RIGHT:
       if (optionList[currentIndex].isNumber) {
         optionList[currentIndex].number += direction == LEFT ? -1 : 1;
-        switch ((callbacks_.*optionList[currentIndex].selectAction)()) {
+        switch (optionList[currentIndex].callback_.callback()) {
           case 100:
             closeMenu();
             return true;
@@ -218,7 +218,7 @@ bool MenuController::move(Input direction) {
       return false;
   }
 }
-int MenuController::getNextIndex(Input direction) const {
+int Menu::getNextIndex(Input direction) const {
   int multiplier = 1;
   if (direction == UP) multiplier = -1;
   for (int i = currentIndex + multiplier;
@@ -228,7 +228,7 @@ int MenuController::getNextIndex(Input direction) const {
   }
   return currentIndex;
 }
-std::string MenuController::getString() const {
+std::string Menu::getString() const {
   std::string input;
   char ch;
 
@@ -256,11 +256,11 @@ std::string MenuController::getString() const {
 
   return input;
 }
-void MenuController::setColor(Colors index) const {
+void Menu::setColor(Colors index) const {
   if (!has_colors()) return;
   attron(COLOR_PAIR(index));
 }
-void MenuController::unsetColor(Colors index) const {
+void Menu::unsetColor(Colors index) const {
   if (!has_colors()) return;
   attroff(COLOR_PAIR(index));
 }

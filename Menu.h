@@ -2,41 +2,33 @@
 #define MENU_H
 #include <sstream>
 #include <vector>
-#include "Callbacks.h"
 
-namespace Menu {
-// Available inputs.
-enum Input { UP, DOWN, LEFT, RIGHT, SELECT, QUIT, NONE };
-// Color pair indexes.
-enum Colors {
-  HIGHLIGHTED = 50,
-  NORMAL,
-  TITLE,
-  INSTRUCTIONS,
-  BACKGROUND,
-  ERROR,
-  DISABLED
+namespace Campbell {
+
+// Class in that should be instantiated and passed in as argument for option
+// callbacks.
+struct Callbacks {
+  virtual int callback();
 };
+
 // TODO: Find solution for when the window is too small to fit all options.
 // TODO: Allow for 2D menu. Not just a list.
-// TODO: Allow Callbacks to be from any class.
-class MenuController {
+class Menu {
  public:
-  MenuController(const char* title = "") : title(title) {
+  Menu(const char* title = "") : title(title) {
     isWinOpen_ = false;
     currentIndex = 0;
   }
-  ~MenuController() { endWin(); }
+  ~Menu() { endWin(); }
 
   // An option to show in the menu list.
   // TODO: Move all options to inheritable classes.
   // Shows selectable option with title and callback.
   struct Option {
-    typedef int (Callbacks::*callback)();
-    Option(const char* text_, callback selectAction,
-           bool isSelectable = true, bool isHighlighted = false)
+    Option(const char* text_, Callbacks& callback, bool isSelectable = true,
+           bool isHighlighted = false)
         : text_(text_),
-          selectAction(selectAction),
+          callback_(callback),
           isSelectable(isSelectable),
           isHighlighted(isHighlighted) {
       isNumber = false;
@@ -45,10 +37,10 @@ class MenuController {
     }
     // Shows number that is changeable with callback that is called if value
     // changes.
-    Option(int number, callback selectAction, bool isSelectable = true,
+    Option(int number, Callbacks callback, bool isSelectable = true,
            bool isHighlighted = false)
         : number(number),
-          selectAction(selectAction),
+          callback_(callback),
           isSelectable(isSelectable),
           isHighlighted(isHighlighted) {
       isTextInput = false;
@@ -104,7 +96,7 @@ class MenuController {
     unsigned int currentValue;
 
     // The function to call when the button is selected. Not used in text input.
-    callback selectAction;
+    Callbacks callback_;
     // Whether or not the option can be selected.
     bool isSelectable;
     // If the option is highlighted.
@@ -116,6 +108,20 @@ class MenuController {
     // If the option is a list of values to choose between.
     bool isList;
   };
+
+  // Available inputs.
+  enum Input { UP, DOWN, LEFT, RIGHT, SELECT, QUIT, NONE };
+  // Color pair indexes.
+  enum Colors {
+    HIGHLIGHTED = 50,
+    NORMAL,
+    TITLE,
+    INSTRUCTIONS,
+    BACKGROUND,
+    ERROR,
+    DISABLED
+  };
+
 
   // Opens menu and takes over control flow.
   void startMenu();
@@ -168,8 +174,6 @@ class MenuController {
   const char* title;
   // Get text input via curses screen.
   std::string getString() const;
-
-  Callbacks callbacks_;
 }; // class Menu
 } // namespace Menu
 
