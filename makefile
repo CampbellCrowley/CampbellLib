@@ -1,13 +1,13 @@
-OBJS = test.out
+TEST_OBJ = test.o
 
-$(OBJS): libtest.cc CampbellLib.cc CampbellLib.h
-	g++ libtest.cc -o $(OBJS)
+$(TEST_OBJ): libtest.cc CampbellLib.cc CampbellLib.h
+	g++ libtest.cc -o $(TEST_OBJ)
 
-test: $(OBJS)
-	./$(OBJS)
+test: $(TEST_OBJ)
+	./$(TEST_OBJ)
 
-clean: $(OBJS)
-	\rm $(OBJS)
+clean: $(TEST_OBJ)
+	\rm $(TEST_OBJ)
 
-tar: CampbellLib.cpp CampbellLib.h libtest.cc
-	tar cfv CampbellLib.tar CampbellLib.cpp CampbellLib.h libtest.cc
+tar: CampbellLib.cpp CampbellLib.h libtest.cc Menu.cc Menu.h
+	tar cfv CampbellLib.tar CampbellLib.cpp CampbellLib.h libtest.cc Menu.cc Menu.h
