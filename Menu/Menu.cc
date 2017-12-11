@@ -29,34 +29,35 @@ void Menu::printMenu() const {
   for (int i = 0; i < (int)optionList.size(); ++i) {
     ::move(startPos + i, 0);
     // TODO: Move if statements into helper-function.
-    if (optionList[i].isHighlighted) {
+    if (optionList[i].isHighlighted_) {
       setColor(HIGHLIGHTED);
       addch(' ');
       cursorPos = startPos + i;
-    } else if (!optionList[i].isSelectable) {
+    } else if (!optionList[i].isSelectable_) {
       setColor(DISABLED);
     } else {
       setColor(NORMAL);
     }
-    if (optionList[i].isNumber) {
-      addch('<');
+    /* if (optionList[i].isNumber) {
     } else if (optionList[i].isTextInput) {
       addch('[');
     } else if (optionList[i].isList) {
       addstr(optionList[i].text_);
       addstr(": <");
-    }
-    addstr(optionList[i].text());
-    if (optionList[i].isNumber) {
+    } */
+    addstr(optionList[i].GetPrefix());
+    addstr(optionList[i].GetText());
+    addstr(optionList[i].GetSuffix());
+    /* if (optionList[i].isNumber) {
       addch('>');
     } else if (optionList[i].isTextInput) {
       addch(']');
     } else if (optionList[i].isList) {
       addch('>');
-    }
-    if (optionList[i].isHighlighted) {
+    } */
+    if (optionList[i].isHighlighted_) {
       unsetColor(HIGHLIGHTED);
-    } else if (!optionList[i].isSelectable) {
+    } else if (!optionList[i].isSelectable_) {
       unsetColor(DISABLED);
     } else {
       unsetColor(NORMAL);
@@ -145,76 +146,34 @@ Menu::Input Menu::getInput() const {
   }
 }
 bool Menu::move(Input direction) {
-  switch(direction) {
+  switch (optionList[currentIndex].input(direction)) {
     case UP:
     case DOWN: {
       int nextIndex = getNextIndex(direction);
       if (nextIndex != currentIndex) {
-        optionList[currentIndex].isHighlighted = false;
+        optionList[currentIndex].isHighlighted_ = false;
         currentIndex = nextIndex;
-        optionList[currentIndex].isHighlighted = true;
+        optionList[currentIndex].isHighlighted_ = true;
         return true;
       } else {
         return false;
       }
     }
     case SELECT:
-      if (optionList[currentIndex].isTextInput) {
-        optionList[currentIndex].modifyableText.clear();
-        printMenu();
-        optionList[currentIndex].modifyableText = getString();
-        return true;
-      } else if (optionList[currentIndex].isList) {
-        return false;
-      } else {
-        closeMenu();
-        switch (optionList[currentIndex].callback_.callback()) {
-          case 0:
-            openMenu();
-            setColor(ERROR);
-            addstr("That didn't work!");
-            unsetColor(ERROR);
-            return false;
-          case 100:
-            return true;
-          case 1:
-          default:
-            openMenu();
-            return false;
-        }
-      }
+      return false;
     case LEFT:
     case RIGHT:
-      if (optionList[currentIndex].isNumber) {
-        optionList[currentIndex].number += direction == LEFT ? -1 : 1;
-        switch (optionList[currentIndex].callback_.callback()) {
-          case 100:
-            closeMenu();
-            return true;
-          case 0:
-            setColor(ERROR);
-            addstr("An error occurred!");
-            unsetColor(ERROR);
-            return false;
-          case 1:
-          default:
-            return true;
-        }
-      } else if (optionList[currentIndex].isList) {
-        if ((optionList[currentIndex].currentValue >=
-                 optionList[currentIndex].values.size() - 1 &&
-             direction == RIGHT) ||
-            (optionList[currentIndex].currentValue == 0 && direction == LEFT)) {
-          return false;
-        } else {
-          optionList[currentIndex].currentValue += direction == LEFT ? -1 : 1;
-          return true;
-        }
-      } else {
-        return false;
-      }
+      return false;
+    case QUIT:
+      closeMenu();
+      return true;
     case NONE:
+      return false;
+    case UNKONWN:
     default:
+      setColor(ERROR);
+      addstr("An error occurred!");
+      unsetColor(ERROR);
       return false;
   }
 }
@@ -224,7 +183,7 @@ int Menu::getNextIndex(Input direction) const {
   for (int i = currentIndex + multiplier;
        (multiplier > 0) ? i < (int)optionList.size() : i >= 0;
        i += multiplier) {
-    if (optionList[i].isSelectable) return i;
+    if (optionList[i].isSelectable_) return i;
   }
   return currentIndex;
 }

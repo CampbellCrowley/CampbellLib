@@ -1,5 +1,5 @@
-#include "CampbellLib.h"
 #include <iostream>
+#include "CampbellLib.h"
 
 int main() {
   // cout rounds to a number that's too small by default.
