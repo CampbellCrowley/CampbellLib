@@ -90,10 +90,9 @@ class Menu {
   bool move(Input direction);
 
   // Adds an option to the menu list.
-  Option* addOption(const Option &newOption) {
+  void addOption(const Option &newOption) {
     optionList.push_back(newOption);
     if (newOption.isHighlighted_) currentIndex = optionList.size() - 1;
-    return &optionList[optionList.size() - 1];
   }
   void clearOptions() { optionList.clear(); }
 

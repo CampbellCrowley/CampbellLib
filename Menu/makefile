@@ -1,7 +1,7 @@
 TEST_OBJ = test.o
 
-$(TEST_OBJ): libtest.cc Menu.h Menu.cc Button.h List.h TextInput.h
-	g++ libtest.cc -o $(TEST_OBJ) Menu.cc -I.
+$(TEST_OBJ): libtest.cc Menu.h Menu.cc Button.h List.h TextInput.h ../CampbellLib.h ../CampbellLib.cc
+	g++ libtest.cc -o $(TEST_OBJ) Menu.cc -I. -I.. ../CampbellLib.cc
 
 test: $(TEST_OBJ)
 	./$(TEST_OBJ)
