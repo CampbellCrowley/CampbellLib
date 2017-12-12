@@ -3,7 +3,10 @@
 #include <vector>
 #include "../CampbellLib.h"
 #include "Button.h"
+#include "Integer.h"
+#include "List.h"
 #include "Menu.h"
+#include "TextInput.h"
 
 struct MainMenuCallbacks : public Campbell::Callbacks {
   int quitCallback() { return 100; }
@@ -86,6 +89,41 @@ int main() {
   Campbell::Test::ASSERT(mainMenu.getOptionList().size(), (size_t)1);
   std::cout << "Checking current index ";
   Campbell::Test::ASSERT(mainMenu.getCurrentIndex(), 0);
+
+  std::cout << "Adding Integer: ";
+  mainMenu.AddOption(new Campbell::menu::Integer(
+      mainMenu, 2, &MainMenuCallbacks::nothing, true, true));
+  Campbell::Test::ASSERT(mainMenu.getOptionList().size(), (size_t)2);
+  std::cout << "Checking current index ";
+  Campbell::Test::ASSERT(mainMenu.getCurrentIndex(), 1);
+
+  std::cout << "Adding List: ";
+  std::vector<std::string> listOptions(0);
+  listOptions.push_back("Hello");
+  listOptions.push_back("World");
+  listOptions.push_back("This");
+  listOptions.push_back("Is");
+  listOptions.push_back("Fun");
+  mainMenu.AddOption(new Campbell::menu::List(mainMenu, "LIST OPTION",
+                                              listOptions, true, true));
+  Campbell::Test::ASSERT(mainMenu.getOptionList().size(), (size_t)3);
+  std::cout << "Checking current index ";
+  Campbell::Test::ASSERT(mainMenu.getCurrentIndex(), 2);
+
+  std::cout << "Adding TextInput: ";
+  mainMenu.AddOption(
+      new Campbell::menu::TextInput(mainMenu, "TextInnput", true, true));
+  Campbell::Test::ASSERT(mainMenu.getOptionList().size(), (size_t)4);
+  std::cout << "Checking current index ";
+  Campbell::Test::ASSERT(mainMenu.getCurrentIndex(), 3);
+
+  std::cout << "Opening menu (No result is pass) " << std::endl;
+  mainMenu.openMenu();
+  Campbell::Test::ASSERT(mainMenu.isWinOpen(), true);
+
+  std::cout << "Closing menu: ";
+  mainMenu.closeMenu();
+  Campbell::Test::ASSERT(mainMenu.isWinOpen(), false);
 
   return 0;
 }
