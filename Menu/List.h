@@ -1,3 +1,5 @@
+#ifndef LIST_H
+#define LIST_H
 #include <vector>
 #include "Menu.h"
 
@@ -14,6 +16,7 @@ struct List : public Menu::Option {
     prefix = ": <";
     suffix = ">";
   }
+  ~List() {}
 
   const char *GetText() const {
     if (currentValue < values.size()) {
@@ -38,3 +41,4 @@ struct List : public Menu::Option {
   unsigned int currentValue;
 };
 }  // namespace Campbell
+#endif /* ifndef LIST_H */

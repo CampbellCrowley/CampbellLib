@@ -1,3 +1,5 @@
+#ifndef TEST_INPUT_H
+#define TEST_INPUT_H
 #include <curses.h>
 #include <string>
 #include "Menu.h"
@@ -14,10 +16,11 @@ struct TextInput : public Menu::Option {
     prefix = "[";
     suffix = "]";
   }
+  ~TextInput() {}
 
   const char *GetText() const { return modifyableText.c_str(); }
   Menu::Input input(Menu::Input input) {
-    switch(input) {
+    switch (input) {
       case Menu::SELECT:
         modifyableText.clear();
         reprint();
@@ -27,7 +30,10 @@ struct TextInput : public Menu::Option {
         return input;
     }
   }
+
+ private:
   Menu &parentMenu;
   std::string modifyableText;
 };
 }  // namespace Campbell
+#endif /* ifndef TEST_INPUT_H */

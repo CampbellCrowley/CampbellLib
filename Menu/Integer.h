@@ -1,10 +1,12 @@
+#ifndef INTEGER_H
+#define INTEGER_H
 #include "Menu.h"
 
 namespace Campbell {
 struct Integer : public Menu::Option {
   // Shows number that is changeable with callback that is called if value
   // changes.
-  Integer(Menu& parentMenu, int startNumber, const Callbacks callback,
+  Integer(Menu& parentMenu, int startNumber, Callbacks* callback,
           bool isSelectable = true, bool isHighlighted = false)
       : Option(parentMenu, isSelectable, isHighlighted),
         number(startNumber),
@@ -12,6 +14,7 @@ struct Integer : public Menu::Option {
     prefix = "<";
     suffix = ">";
   }
+  ~Integer() {}
 
   const char* GetText() const {
     std::stringstream ss;
@@ -23,7 +26,7 @@ struct Integer : public Menu::Option {
     if (input == Menu::LEFT || input == Menu::RIGHT) {
       number += input == Menu::LEFT ? -1 : 1;
       closeMenu();
-      switch (callback_.callback()) {
+      switch (callback_->callback()) {
         case 100:
           return Menu::QUIT;
         case 0:
@@ -38,9 +41,11 @@ struct Integer : public Menu::Option {
     return input;
   }
 
+ private:
   // Text to show the user.
   int number;
   // The function to call when the button is selected.
-  const Callbacks callback_;
+  Callbacks* callback_;
 };
 }  // namespace Campbell
+#endif /* ifndef INTEGER_H */

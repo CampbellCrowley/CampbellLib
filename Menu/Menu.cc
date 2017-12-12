@@ -1,6 +1,7 @@
 #include "Menu.h"
 #include <curses.h>
 namespace Campbell {
+namespace menu {
 void Menu::startMenu() {
   openMenu();
   Input nextInput = NONE;
@@ -29,35 +30,35 @@ void Menu::printMenu() const {
   for (int i = 0; i < (int)optionList.size(); ++i) {
     ::move(startPos + i, 0);
     // TODO: Move if statements into helper-function.
-    if (optionList[i].isHighlighted_) {
+    if (optionList[i]->isHighlighted_) {
       setColor(HIGHLIGHTED);
       addch(' ');
       cursorPos = startPos + i;
-    } else if (!optionList[i].isSelectable_) {
+    } else if (!optionList[i]->isSelectable_) {
       setColor(DISABLED);
     } else {
       setColor(NORMAL);
     }
-    /* if (optionList[i].isNumber) {
-    } else if (optionList[i].isTextInput) {
+    /* if (optionList[i]->isNumber) {
+    } else if (optionList[i]->isTextInput) {
       addch('[');
-    } else if (optionList[i].isList) {
-      addstr(optionList[i].text_);
+    } else if (optionList[i]->isList) {
+      addstr(optionList[i]->text_);
       addstr(": <");
     } */
-    addstr(optionList[i].GetPrefix());
-    addstr(optionList[i].GetText());
-    addstr(optionList[i].GetSuffix());
-    /* if (optionList[i].isNumber) {
+    addstr(optionList[i]->GetPrefix());
+    addstr(optionList[i]->GetText());
+    addstr(optionList[i]->GetSuffix());
+    /* if (optionList[i]->isNumber) {
       addch('>');
-    } else if (optionList[i].isTextInput) {
+    } else if (optionList[i]->isTextInput) {
       addch(']');
-    } else if (optionList[i].isList) {
+    } else if (optionList[i]->isList) {
       addch('>');
     } */
-    if (optionList[i].isHighlighted_) {
+    if (optionList[i]->isHighlighted_) {
       unsetColor(HIGHLIGHTED);
-    } else if (!optionList[i].isSelectable_) {
+    } else if (!optionList[i]->isSelectable_) {
       unsetColor(DISABLED);
     } else {
       unsetColor(NORMAL);
@@ -112,7 +113,7 @@ void Menu::endWin() {
   endwin();
   isWinOpen_ = false;
 }
-Menu::Input Menu::getInput() const {
+Campbell::menu::Input Menu::getInput() const {
   wchar_t input = getch();
   switch (input) {
     case KEY_DOWN:
@@ -146,14 +147,14 @@ Menu::Input Menu::getInput() const {
   }
 }
 bool Menu::move(Input direction) {
-  switch (optionList[currentIndex].input(direction)) {
+  switch (optionList[currentIndex]->input(direction)) {
     case UP:
     case DOWN: {
       int nextIndex = getNextIndex(direction);
       if (nextIndex != currentIndex) {
-        optionList[currentIndex].isHighlighted_ = false;
+        optionList[currentIndex]->isHighlighted_ = false;
         currentIndex = nextIndex;
-        optionList[currentIndex].isHighlighted_ = true;
+        optionList[currentIndex]->isHighlighted_ = true;
         return true;
       } else {
         return false;
@@ -177,13 +178,19 @@ bool Menu::move(Input direction) {
       return false;
   }
 }
+void Menu::AddOption(Option* newOption) {
+  optionList.push_back(newOption);
+  if (newOption->isHighlighted_) {
+    currentIndex = optionList.size() - 1;
+  }
+}
 int Menu::getNextIndex(Input direction) const {
   int multiplier = 1;
   if (direction == UP) multiplier = -1;
   for (int i = currentIndex + multiplier;
        (multiplier > 0) ? i < (int)optionList.size() : i >= 0;
        i += multiplier) {
-    if (optionList[i].isSelectable_) return i;
+    if (optionList[i]->isSelectable_) return i;
   }
   return currentIndex;
 }
@@ -223,4 +230,5 @@ void Menu::unsetColor(Colors index) const {
   if (!has_colors()) return;
   attroff(COLOR_PAIR(index));
 }
-}  // namespace Menu
+}  // namespace menu
+}  // namespace Campbell
