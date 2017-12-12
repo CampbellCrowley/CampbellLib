@@ -4,7 +4,8 @@
 #include "Menu.h"
 
 namespace Campbell {
-struct List : public Menu::Option {
+namespace menu {
+struct List : public menu::Option {
   // Allows a choice between a list of options.
   List(Menu &parentMenu, const char *text,
        const std::vector<std::string> &values, bool isSelectable = true,
@@ -26,11 +27,11 @@ struct List : public Menu::Option {
     }
   }
 
-  Menu::Input input(Menu::Input input) {
-    if ((currentValue < values.size() - 1 && input == Menu::RIGHT) ||
-        (currentValue > 0 && input == Menu::LEFT)) {
-      currentValue += input == Menu::LEFT ? -1 : 1;
-      return Menu::NONE;
+  Input input(Input input) {
+    if ((currentValue < values.size() - 1 && input == RIGHT) ||
+        (currentValue > 0 && input == LEFT)) {
+      currentValue += input == LEFT ? -1 : 1;
+      return NONE;
     }
     return input;
   }
@@ -40,5 +41,6 @@ struct List : public Menu::Option {
   const std::vector<std::string> values;
   unsigned int currentValue;
 };
+}  // namespace menu
 }  // namespace Campbell
 #endif /* ifndef LIST_H */

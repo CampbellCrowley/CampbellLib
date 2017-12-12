@@ -5,7 +5,8 @@
 #include "Menu.h"
 
 namespace Campbell {
-struct TextInput : public Menu::Option {
+namespace menu {
+struct TextInput : public menu::Option {
   // Shows text input for entering a string. No callback, since everything is
   // managed internally.
   TextInput(Menu &parentMenu, std::string defaultText = "",
@@ -19,13 +20,13 @@ struct TextInput : public Menu::Option {
   ~TextInput() {}
 
   const char *GetText() const { return modifyableText.c_str(); }
-  Menu::Input input(Menu::Input input) {
+  Input input(Input input) {
     switch (input) {
-      case Menu::SELECT:
+      case SELECT:
         modifyableText.clear();
         reprint();
         modifyableText = parentMenu.getString();
-        return Menu::NONE;
+        return NONE;
       default:
         return input;
     }
@@ -35,5 +36,6 @@ struct TextInput : public Menu::Option {
   Menu &parentMenu;
   std::string modifyableText;
 };
+}  // namespace menu
 }  // namespace Campbell
 #endif /* ifndef TEST_INPUT_H */

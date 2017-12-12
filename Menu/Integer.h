@@ -3,14 +3,18 @@
 #include "Menu.h"
 
 namespace Campbell {
-struct Integer : public Menu::Option {
+namespace menu {
+struct Integer : public menu::Option {
+  typedef int (Callbacks::*Callback)();
   // Shows number that is changeable with callback that is called if value
   // changes.
-  Integer(Menu& parentMenu, int startNumber, Callbacks* callback,
+  template <typename T>
+  Integer(Menu& parentMenu, int startNumber, T callback,
           bool isSelectable = true, bool isHighlighted = false)
       : Option(parentMenu, isSelectable, isHighlighted),
+        parentMenu_(parentMenu),
         number(startNumber),
-        callback_(callback) {
+        callback_(static_cast<Callback>(callback)) {
     prefix = "<";
     suffix = ">";
   }
@@ -22,30 +26,32 @@ struct Integer : public Menu::Option {
     return ss.str().c_str();
   }
   // TODO: Make SELECT begin editing.
-  Menu::Input input(Menu::Input input) {
-    if (input == Menu::LEFT || input == Menu::RIGHT) {
-      number += input == Menu::LEFT ? -1 : 1;
+  menu::Input input(menu::Input input) {
+    if (input == menu::LEFT || input == menu::RIGHT) {
+      number += input == menu::LEFT ? -1 : 1;
       closeMenu();
-      switch (callback_->callback()) {
+      switch ((parentMenu_.GetCallbacks()->*callback_)()) {
         case 100:
-          return Menu::QUIT;
+          return QUIT;
         case 0:
           openMenu();
-          return Menu::UNKONWN;
+          return UNKONWN;
         case 1:
         default:
           openMenu();
-          return Menu::NONE;
+          return NONE;
       }
     }
     return input;
   }
 
  private:
+  Menu& parentMenu_;
   // Text to show the user.
   int number;
   // The function to call when the button is selected.
-  Callbacks* callback_;
+  Callback callback_;
 };
+}  // namespace menu
 }  // namespace Campbell
 #endif /* ifndef INTEGER_H */
